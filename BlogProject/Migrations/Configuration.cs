@@ -18,15 +18,21 @@ namespace BlogProject.Migrations
         protected override void Seed(BlogProject.Models.ApplicationDbContext context)
         {
             var roleManager = new RoleManager<IdentityRole>(
-                new RoleStore<IdentityRole>(context));
+            new RoleStore<IdentityRole>(context));
 
             if(!context.Roles.Any(r=> r.Name =="Admin"))
             {
                 roleManager.Create(new IdentityRole { Name = "Admin" });
             }
 
+            new RoleStore<IdentityRole> (context);
+            if(!context.Roles.Any(r=> r.Name =="Moderator"))
+            {
+                roleManager.Create(new IdentityRole { Name = "Moderator" });
+            }
+
             var userManager = new UserManager<ApplicationUser>(
-                new UserStore<ApplicationUser>(context));
+            new UserStore<ApplicationUser>(context));
 
             if (!context.Users.Any(u => u.Email == "aaron.rowan@gmail.com"))
             {
@@ -40,8 +46,23 @@ namespace BlogProject.Migrations
                 }, "CFdb100!"); 
             }
 
+            if (!context.Users.Any(u => u.Email == "jtwichell@coderfoundry.com"))
+            {
+                userManager.Create(new ApplicationUser
+                {
+                    UserName = "jtwichell@coderfoundry.com",
+                    Email = "jtwichell@coderfoundry.com",
+                    FirstName = "Jason",
+                    LastName = "Twichell",
+                    DisplayName = "J-Twich"
+                }, "Abc&123!");
+            }
+
             var userId = userManager.FindByEmail("aaron.rowan@gmail.com").Id;
             userManager.AddToRole(userId, "Admin");
+
+            userId = userManager.FindByEmail("jtwichell@coderfoundry.com").Id;
+            userManager.AddToRole(userId, "Moderator");
         }
     }
 }
